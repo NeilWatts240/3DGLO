@@ -68,16 +68,15 @@ window.addEventListener('DOMContentLoaded', function () {
     const MenuScroll = () => {
 
         let items = document.querySelector('ul').querySelectorAll('li'),
-            linkNavs = document.querySelector('body').querySelectorAll('[href^="#"]');
-        // goTo = [
-        //     document.querySelector('#service-block').getBoundingClientRect().top,
-        //     document.querySelector('#portfolio').getBoundingClientRect().top,
-        //     document.querySelector('#calc').getBoundingClientRect().top,
-        //     document.querySelector('#command').getBoundingClientRect().top,
-        //     document.querySelector('#connect').getBoundingClientRect().top
-        // ];
 
-        console.log(linkNavs);
+            goTo = [
+                document.querySelector('#service-block').getBoundingClientRect().top,
+                document.querySelector('#portfolio').getBoundingClientRect().top,
+                document.querySelector('#calc').getBoundingClientRect().top,
+                document.querySelector('#command').getBoundingClientRect().top,
+                document.querySelector('#connect').getBoundingClientRect().top
+            ];
+
         for (let i = 0; i < items.length; i++) {
 
             items[i].addEventListener('click', function (event) {
@@ -85,7 +84,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 let num = document.documentElement.scrollTop;
                 let idInterval = setInterval(function () {
-                    if (num < linkNavs[i]) {
+                    if (num < goTo[i]) {
                         num += 20;
                         document.documentElement.scrollTop = num;
                     }
