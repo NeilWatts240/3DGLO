@@ -46,30 +46,20 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     };
     const toggleMenu = () => {
-        const btnMenu = document.querySelector('.menu'),
-            menu = document.querySelector('menu'),
+        const menu = document.querySelector('menu'),
+            body = document.querySelector('body'),
             closeBtn = document.querySelector('.close-btn'),
-            menuItems = menu.querySelectorAll('ul>li');
+            items = document.querySelector('ul').querySelectorAll('li');
+
 
         const handlerMenu = () => {
+
             menu.classList.toggle('active-menu');
 
-            // if (!menu.style.transform || menu.style.transform === `translate(-100%)`) {
-            //     menu.style.transform = `translate(0)`;
-            // } else {
-            //     menu.style.transform = `translate(-100%)`;
-            // }
         };
+        const MenuScroll = () => {
 
-        btnMenu.addEventListener('click', handlerMenu);
-        closeBtn.addEventListener('click', handlerMenu);
-        menuItems.forEach((elem) => elem.addEventListener('click', handlerMenu));
-    };
-    const MenuScroll = () => {
-
-        let items = document.querySelector('ul').querySelectorAll('li'),
-
-            goTo = [
+            const goTo = [
                 document.querySelector('#service-block').getBoundingClientRect().top,
                 document.querySelector('#portfolio').getBoundingClientRect().top,
                 document.querySelector('#calc').getBoundingClientRect().top,
@@ -77,73 +67,234 @@ window.addEventListener('DOMContentLoaded', function () {
                 document.querySelector('#connect').getBoundingClientRect().top
             ];
 
-        for (let i = 0; i < items.length; i++) {
+            for (let i = 0; i < items.length; i++) {
 
-            items[i].addEventListener('click', function (event) {
+                items[i].addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    let num = document.documentElement.scrollTop;
+                    let idInterval = setInterval(function () {
+                        if (num < goTo[i]) {
+                            num += 20;
+                            document.documentElement.scrollTop = num;
+                        }
+                    }, 2);
+
+                    setTimeout(function () {
+                        clearInterval(idInterval);
+                    }, 2000);
+                })
+            };
+        };
+        const toServiceBlockClick = () => {
+            const click = document.querySelector('main').querySelector('a');
+
+            click.addEventListener('click', function (event) {
                 event.preventDefault();
 
+                const goTo = document.querySelector('#service-block').getBoundingClientRect().top;
                 let num = document.documentElement.scrollTop;
-                let idInterval = setInterval(function () {
-                    if (num < goTo[i]) {
+                let idInterval = setInterval(() => {
+                    if (num < goTo) {
                         num += 20;
                         document.documentElement.scrollTop = num;
                     }
-                }, 2);
-
+                }, 5);
                 setTimeout(function () {
                     clearInterval(idInterval);
-                }, 2000);
-            })
+                }, 500);
+            });
         };
+
+        MenuScroll();
+        toServiceBlockClick();
+
+        body.addEventListener('click', event => {
+            const target = event.target;
+            if (target.closest('.menu')) {
+                handlerMenu();
+            } else if (target === closeBtn) {
+                handlerMenu();
+            } else if (menu.classList.contains('active-menu') && target !== menu && !target.matches('li')) {
+                handlerMenu();
+            }
+        });
     };
     const togglePopUp = () => {
-        const popup = document.querySelector('.popup'),
-            popupBtn = document.querySelectorAll('.popup-btn'),
-            popupClose = document.querySelector('.popup-close');
+        const popUp = document.querySelector('.popup'),
+            popUpBtn = document.querySelectorAll('.popup-btn');
 
-        popupBtn.forEach((elem) => {
+        popUpBtn.forEach((elem) => {
             elem.addEventListener('click', () => {
                 let count = 0;
-                popup.style.display = 'block';
+                popUp.style.display = 'block';
 
                 if (screen.availWidth > 768) {
-                    popup.style.opacity = '0';
+                    popUp.style.opacity = '0';
                     let idInterval = setInterval(function () {
                         count += 0.02;
-                        popup.style.opacity = `${count}`;
-                        console.log(count);
+                        popUp.style.opacity = `${count}`;
                     }, 10);
                     setTimeout(function () {
                         clearInterval(idInterval);
                     }, 600);
                 }
-                console.log(screen.availWidth);
             });
-            popupClose.addEventListener('click', () => {
-                popup.style.display = 'none';
+
+            popUp.addEventListener('click', (event) => {
+
+                let target = event.target;
+
+                if (target.classList.contains('popup-close')) {
+                    popUp.style.display = 'none';
+                } else {
+
+                    target = target.closest('.popup-content');
+
+                    if (!target) {
+                        popUp.style.display = 'none';
+                    }
+                }
             });
         });
     };
-    const toServiceBlockClick = () => {
-        const click = document.querySelector('main').querySelector('a');
-        click.addEventListener('click', function (event) {
-            event.preventDefault();
-            let num = document.documentElement.scrollTop;
-            let idInterval = setInterval(() => {
-                if (num < 830) {
-                    num += 20;
-                    document.documentElement.scrollTop = num;
+    const tabs = () => {
+        const tabHeader = document.querySelector('.service-header'),
+            tab = tabHeader.querySelectorAll('.service-header-tab'),
+            tabContent = document.querySelectorAll('.service-tab');
+
+        const toggleTabContent = (index) => {
+
+            for (let i = 0; i < tabContent.length; i++) {
+                if (index === i) {
+                    tab[i].classList.add('active');
+                    tabContent[i].classList.remove('d-none');
+                } else {
+                    tab[i].classList.remove('active');
+                    tabContent[i].classList.add('d-none');
                 }
-            }, 5);
-            setTimeout(function () {
-                clearInterval(idInterval);
-            }, 500);
+            }
+        };
+
+        tabHeader.addEventListener('click', (event) => {
+            let target = event.target;
+            target = target.closest('.service-header-tab');
+
+            if (target) {
+                tab.forEach((item, i) => {
+                    if (item === target) {
+                        toggleTabContent(i);
+                    }
+                });
+            }
         });
+    };
+    const slider = () => {
+        const slide = document.querySelectorAll('.portfolio-item'),
+            slider = document.querySelector('.portfolio-content'),
+            portfolioDots = document.querySelector('.portfolio-dots');
+
+        let dot = [],
+            currentSlide = 0,
+            interval;
+
+        for (let i = 0; i < slide.length; i++) {
+
+            let li = document.createElement('li');
+            li.classList.add('dot');
+
+            dot[i] = li;
+            dot[0].classList.add('dot-active');
+            portfolioDots.append(dot[i]);
+
+        }
+
+        const prevSlide = (elem, index, strClass) => {
+            elem[index].classList.remove(strClass);
+        };
+
+        const nextSlide = (elem, index, strClass) => {
+            elem[index].classList.add(strClass);
+        };
+
+        const autoPlaySlide = () => {
+
+            prevSlide(slide, currentSlide, 'portfolio-item-active');
+            prevSlide(dot, currentSlide, 'dot-active');
+
+            currentSlide++;
+            if (currentSlide >= slide.length) {
+                currentSlide = 0;
+            }
+
+            nextSlide(slide, currentSlide, 'portfolio-item-active');
+            nextSlide(dot, currentSlide, 'dot-active');
+        };
+
+        const startSlide = (time = 1500) => {
+            interval = setInterval(autoPlaySlide, time);
+        };
+
+        const stopSlide = () => {
+            clearInterval(interval);
+        };
+
+        slider.addEventListener('click', (event) => {
+            event.preventDefault();
+            let target = event.target;
+
+            if (!target.matches('.portfolio-btn, .dot')) {
+                return;
+            }
+
+            prevSlide(slide, currentSlide, 'portfolio-item-active');
+            prevSlide(dot, currentSlide, 'dot-active');
+
+            if (target.matches('#arrow-right')) {
+                currentSlide++;
+            } else if (target.matches('#arrow-left')) {
+                currentSlide--;
+            } else if (target.matches('.dot')) {
+
+                dot.forEach((elem, index) => {
+                    if (elem === target) {
+                        currentSlide = index;
+                    }
+                });
+            }
+
+            if (currentSlide >= slide.length) {
+                currentSlide = 0;
+            }
+            if (currentSlide < 0) {
+                currentSlide = slide.length - 1;
+            }
+
+            nextSlide(slide, currentSlide, 'portfolio-item-active');
+            nextSlide(dot, currentSlide, 'dot-active');
+        });
+
+        slider.addEventListener('mouseover', (event) => {
+            if (event.target.matches('.portfolio-btn') ||
+                event.target.matches('.dot')) {
+                stopSlide();
+            }
+        });
+
+        slider.addEventListener('mouseout', (event) => {
+            if (event.target.matches('.portfolio-btn') ||
+                event.target.matches('.dot')) {
+                startSlide();
+            }
+        });
+
+        startSlide(1500);
+
     };
 
-    MenuScroll();
-    toServiceBlockClick();
-    countTimer('24 november 2022');
+    countTimer('29 november 2022');
     toggleMenu();
     togglePopUp();
+    tabs();
+    slider();
 });
