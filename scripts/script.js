@@ -298,3 +298,4 @@ window.addEventListener('DOMContentLoaded', function () {
     tabs();
     slider();
 });
+
