@@ -291,11 +291,50 @@ window.addEventListener('DOMContentLoaded', function () {
         startSlide(1500);
 
     };
+    const toggleCommandPics = () => {
+        const command = document.querySelector('.command'),
+            img = command.querySelectorAll('img');
+
+        img.forEach((item, index) => {
+
+            img[index].addEventListener('mouseenter', (event) => {
+                const target = event.target,
+                    srcPic = target.src;
+
+                target.src = target.dataset.img;
+                target.dataset.img = srcPic;
+            })
+
+            img[index].addEventListener('mouseleave', (event) => {
+                const target = event.target,
+                    srcPic = target.src;
+
+                target.src = target.dataset.img;
+                target.dataset.img = srcPic;
+            })
+        })
+    };
+    const calc = () => {
+        const calcBlock = document.querySelector('.calc-block'),
+            input = calcBlock.querySelectorAll('input');
+
+        input.forEach((item, index) => {
+
+            input[index].addEventListener('input', () => {
+                let inputValue = input[index].value;
+
+                inputValue.replace(/\d/, '');
+
+            })
+        })
+    };
 
     countTimer('29 november 2022');
     toggleMenu();
     togglePopUp();
     tabs();
     slider();
+    toggleCommandPics();
+    calc();
 });
 
