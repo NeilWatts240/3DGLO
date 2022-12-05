@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', function () {
         };
 
         if (getTimeRemaining().timeRemaining > 0) {
+
             setInterval(function () {
                 let timer = getTimeRemaining();
 
@@ -45,12 +46,12 @@ window.addEventListener('DOMContentLoaded', function () {
             timerSeconds.textContent = '00';
         }
     };
+
     const toggleMenu = () => {
         const menu = document.querySelector('menu'),
             body = document.querySelector('body'),
             closeBtn = document.querySelector('.close-btn'),
             items = document.querySelector('ul').querySelectorAll('li');
-
 
         const handlerMenu = () => {
 
@@ -100,6 +101,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         document.documentElement.scrollTop = num;
                     }
                 }, 5);
+
                 setTimeout(function () {
                     clearInterval(idInterval);
                 }, 500);
@@ -111,6 +113,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         body.addEventListener('click', event => {
             const target = event.target;
+
             if (target.closest('.menu')) {
                 handlerMenu();
             } else if (target === closeBtn) {
@@ -120,11 +123,13 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
     };
+
     const togglePopUp = () => {
         const popUp = document.querySelector('.popup'),
             popUpBtn = document.querySelectorAll('.popup-btn');
 
         popUpBtn.forEach((elem) => {
+
             elem.addEventListener('click', () => {
                 let count = 0;
                 popUp.style.display = 'block';
@@ -135,6 +140,7 @@ window.addEventListener('DOMContentLoaded', function () {
                         count += 0.02;
                         popUp.style.opacity = `${count}`;
                     }, 10);
+
                     setTimeout(function () {
                         clearInterval(idInterval);
                     }, 600);
@@ -142,7 +148,6 @@ window.addEventListener('DOMContentLoaded', function () {
             });
 
             popUp.addEventListener('click', (event) => {
-
                 let target = event.target;
 
                 if (target.classList.contains('popup-close')) {
@@ -158,6 +163,7 @@ window.addEventListener('DOMContentLoaded', function () {
             });
         });
     };
+
     const tabs = () => {
         const tabHeader = document.querySelector('.service-header'),
             tab = tabHeader.querySelectorAll('.service-header-tab'),
@@ -189,6 +195,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
     };
+
     const slider = () => {
         const slide = document.querySelectorAll('.portfolio-item'),
             slider = document.querySelector('.portfolio-content'),
@@ -291,6 +298,7 @@ window.addEventListener('DOMContentLoaded', function () {
         startSlide(1500);
 
     };
+
     const toggleCommandPics = () => {
         const command = document.querySelector('.command'),
             img = command.querySelectorAll('img');
@@ -303,7 +311,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 target.src = target.dataset.img;
                 target.dataset.img = srcPic;
-            })
+            });
 
             img[index].addEventListener('mouseleave', (event) => {
                 const target = event.target,
@@ -311,22 +319,70 @@ window.addEventListener('DOMContentLoaded', function () {
 
                 target.src = target.dataset.img;
                 target.dataset.img = srcPic;
-            })
-        })
+            });
+        });
     };
-    const calc = () => {
+
+    const calc = (price = 100) => {
+
         const calcBlock = document.querySelector('.calc-block'),
-            input = calcBlock.querySelectorAll('input');
+            calcType = document.querySelector('.calc-type'),
+            calcSquare = document.querySelector('.calc-square'),
+            calcDay = document.querySelector('.calc-day'),
+            calcCount = document.querySelector('.calc-count'),
+            totalValue = document.getElementById('total');
 
-        input.forEach((item, index) => {
+        const countSum = () => {
+            let total = 0,
+                countValue = 1,
+                dayValue = 1;
+            const typeValue = calcType.options[calcType.selectedIndex].value,
+                squareValue = +calcSquare.value;
 
-            input[index].addEventListener('input', () => {
-                let inputValue = input[index].value;
+            if (calcCount.value > 1) {
+                countValue += (calcCount.value - 1) / 10;
+            }
 
-                inputValue.replace(/\d/, '');
+            if (calcDay.value && calcDay.value < 5) {
+                dayValue *= 2;
+            } else if (calcDay.value && calcDay.value < 10) {
+                dayValue *= 1.5;
+            } else {
+                dayValue *= 1.1;
+            }
 
-            })
-        })
+            if (typeValue && squareValue) {
+                total = price * typeValue * squareValue * countValue * dayValue;
+            }
+
+            let count = 0;
+
+            let intervalId = setInterval(() => {
+
+                if (count < total) {
+
+                    count += 100;
+                    totalValue.textContent = count;
+
+                }
+
+            }, 10)
+
+            setTimeout(() => {
+
+                clearInterval(intervalId);
+                totalValue.textContent = Math.round(total);
+
+            }, 800);
+        };
+
+        calcBlock.addEventListener('change', (event) => {
+            const target = event.target;
+
+            if (target.matches('select') || target.matches('input')) {
+                countSum();
+            }
+        });
     };
 
     countTimer('29 november 2022');
@@ -335,6 +391,5 @@ window.addEventListener('DOMContentLoaded', function () {
     tabs();
     slider();
     toggleCommandPics();
-    calc();
+    calc(100);
 });
-
