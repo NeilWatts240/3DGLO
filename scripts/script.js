@@ -385,6 +385,95 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     };
 
+    const sendForm = () => {
+        const errorMessage = 'Что-то пошло не так...',
+            loadMessage = 'Загрузка...',
+            successMesage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+        const statusMessage = document.createElement('div');
+        statusMessage.style.cssText = 'font-size : 2rem;';
+        statusMessage.style.color = 'white';
+
+        const forms = document.querySelectorAll('form');
+
+        forms.forEach((form) => {
+            const inputs = form.querySelectorAll('input');
+
+            form.addEventListener('submit', (event) => {
+
+                event.preventDefault();
+                form.appendChild(statusMessage);
+                statusMessage.textContent = loadMessage;
+                const formData = new FormData(form);
+                let body = {};
+                formData.forEach((val, key) => {
+                    body[key] = val;
+                });
+                postData(body, () => {
+                    statusMessage.textContent = successMesage;
+                }, (error) => {
+                    statusMessage.textContent = errorMessage;
+                    console.error(error);
+                });
+
+                inputs.forEach((input) => {
+                    input.value = '';
+                });
+            });
+        });
+
+        const postData = (body, outputData, errorData) => {
+            const request = new XMLHttpRequest();
+
+            request.addEventListener('readystatechange', () => {
+                if (request.readyState !== 4) {
+                    return;
+                }
+                if (request.status === 200) {
+                    outputData();
+                } else {
+                    errorData(request.status);
+                }
+            });
+
+            request.open('POST', 'https://fakestoreapi.com/products');
+            request.setRequestHeader('Content-Type', 'application/json');
+
+            request.send(JSON.stringify({
+                title: 'test product',
+                price: 13.5,
+                description: 'lorem ipsum set',
+                image: 'https://i.pravatar.cc',
+                category: 'electronic'
+            }));
+        }
+    };
+
+    const formValidation = () => {
+        const forms = document.querySelectorAll('form');
+
+        forms.forEach((form) => {
+            const inputs = form.querySelectorAll('input');
+
+            inputs.forEach((input) => {
+
+                input.addEventListener('input', () => {
+
+                    if (input.classList.contains('form-phone')) {
+
+                        input.value = input.value.replace(/[^\d+]/, '');
+                    }
+                    if (input.classList.contains('mess') ||
+                        input.classList.contains('form-name') ||
+                        input.id === 'form2-name') {
+
+                        input.value = input.value.replace(/[^А-Яа-яёЁ\s]/, '');
+                    }
+                });
+            });
+        });
+    };
+
     countTimer('29 november 2022');
     toggleMenu();
     togglePopUp();
@@ -392,4 +481,6 @@ window.addEventListener('DOMContentLoaded', function () {
     slider();
     toggleCommandPics();
     calc(100);
+    sendForm();
+    formValidation();
 });
